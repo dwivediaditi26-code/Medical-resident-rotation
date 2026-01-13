@@ -1,0 +1,1768 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotation • Companion</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .title-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .nav-active {
+            border-bottom: 3px solid #1e40af;
+            color: #1e40af;
+        }
+
+        .patient-card {
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .patient-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+        }
+
+        .status-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 9999px;
+        }
+
+        .section-header {
+            font-size: 13px;
+            letter-spacing: -.02em;
+            text-transform: uppercase;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: white;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .tab-active {
+            border-bottom: 2px solid #1e40af;
+            color: #1e40af;
+            font-weight: 600;
+        }
+
+        .input-field {
+            background: #fafafa;
+            border: 1px solid #e5e5e5;
+            transition: border-color 0.15s ease;
+        }
+
+        .input-field:focus {
+            border-color: #1e40af;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .table-row:hover {
+            background: #fafafa;
+        }
+
+        .print-modal {
+            animation: printPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes printPop {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .bottom-nav {
+            box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (min-width: 768px) {
+            .bottom-nav {
+                display: none;
+            }
+            
+            .desktop-nav {
+                display: block;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .desktop-nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-zinc-50">
+    <div class="flex flex-col h-screen">
+        <!-- Top Header -->
+        <div class="border-b border-zinc-200 bg-white">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="h-16 flex items-center justify-between">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-7 h-7 bg-blue-950 rounded flex items-center justify-center">
+                            <span class="text-white text-[18px] leading-none font-bold title-font">R</span>
+                        </div>
+                        <div>
+                            <div class="title-font text-xl font-semibold tracking-tighter text-zinc-900">rotation</div>
+                            <div class="text-[10px] text-zinc-500 -mt-1">companion</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-x-6">
+                        <div class="hidden md:flex items-center gap-x-5 text-sm">
+                            <div class="flex items-center gap-x-1.5">
+                                <div class="text-zinc-400">oct 17</div>
+                                <div class="text-zinc-900 font-medium">thursday</div>
+                            </div>
+                            <div class="h-3 w-px bg-zinc-200"></div>
+                            <div>
+                                <div class="text-emerald-600 font-medium">night shift</div>
+                                <div class="text-[10px] text-zinc-500 -mt-0.5">med ward • floor 3</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-x-2">
+                            <div class="w-8 h-8 bg-zinc-100 rounded-full flex items-center justify-center relative">
+                                <div class="w-2 h-2 bg-emerald-400 rounded-full absolute -top-0.5 -right-0.5"></div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-medium text-sm">dr. alex kim</div>
+                                <div class="text-[10px] text-zinc-500 -mt-1">pg year 2</div>
+                            </div>
+                        </div>
+
+                        <button onclick="showPrintOptions()" 
+                                class="flex items-center gap-x-1.5 px-3 py-1.5 bg-zinc-900 text-white text-xs font-medium rounded-lg hover:bg-zinc-800 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H3a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
+                            </svg>
+                            PRINT
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 overflow-hidden flex" id="main-content">
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="flex-1 overflow-auto">
+                <div class="max-w-7xl mx-auto px-4 py-6">
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+                        <div class="bg-white rounded-2xl p-4 border border-zinc-100">
+                            <div class="text-zinc-400 text-xs">total patients</div>
+                            <div class="text-4xl font-semibold title-font tracking-tighter text-zinc-900 mt-1">12</div>
+                            <div class="text-emerald-600 text-xs mt-3 flex items-center gap-1">
+                                <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                                3 new today
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-4 border border-zinc-100 relative overflow-hidden">
+                            <div class="text-zinc-400 text-xs">critical</div>
+                            <div class="text-4xl font-semibold title-font tracking-tighter text-red-600 mt-1">2</div>
+                            <div class="absolute bottom-4 right-4 text-[10px] text-red-500/70">2 unstable</div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-4 border border-zinc-100">
+                            <div class="text-zinc-400 text-xs">pending labs</div>
+                            <div class="text-4xl font-semibold title-font tracking-tighter text-amber-600 mt-1">7</div>
+                            <div class="text-zinc-400 text-xs mt-1">3 urgent</div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-4 border border-zinc-100">
+                            <div class="text-zinc-400 text-xs">handovers</div>
+                            <div class="text-4xl font-semibold title-font tracking-tighter text-zinc-900 mt-1">1</div>
+                            <div class="mt-3 h-1 bg-zinc-100 rounded">
+                                <div class="w-[30%] h-1 bg-blue-600 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="mb-10">
+                        <div class="uppercase text-zinc-400 text-xs font-medium tracking-widest mb-3 px-1">QUICK ACTIONS</div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <button onclick="addNewPatient()" 
+                                    class="bg-white hover:bg-zinc-50 border border-zinc-200 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-[0.985]">
+                                <div class="w-11 h-11 bg-blue-50 rounded-xl flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                </div>
+                                <div class="text-sm font-medium">add patient</div>
+                            </button>
+
+                            <button onclick="switchView('patients')" 
+                                    class="bg-white hover:bg-zinc-50 border border-zinc-200 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-[0.985]">
+                                <div class="w-11 h-11 bg-emerald-50 rounded-xl flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 01-5.356-1.857M17 20H7m5-18v18" />
+                                    </svg>
+                                </div>
+                                <div class="text-sm font-medium">my patients</div>
+                                <div class="text-[10px] text-zinc-400">8 active</div>
+                            </button>
+
+                            <button onclick="switchView('handover')" 
+                                    class="bg-white hover:bg-zinc-50 border border-zinc-200 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-[0.985]">
+                                <div class="w-11 h-11 bg-amber-50 rounded-xl flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2" />
+                                    </svg>
+                                </div>
+                                <div class="text-sm font-medium">handover</div>
+                            </button>
+
+                            <button onclick="showPrintOptions()" 
+                                    class="bg-white hover:bg-zinc-50 border border-zinc-200 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all active:scale-[0.985]">
+                                <div class="w-11 h-11 bg-zinc-100 rounded-xl flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H3a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div class="text-sm font-medium">print notes</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div>
+                        <div class="flex justify-between items-center mb-4 px-1">
+                            <div class="uppercase text-zinc-400 text-xs font-medium tracking-widest">RECENT ACTIVITY</div>
+                            <div class="text-blue-600 text-xs font-medium">VIEW ALL</div>
+                        </div>
+                        
+                        <div class="space-y-px">
+                            <div class="bg-white px-4 py-3 flex gap-4 items-center border-l-4 border-emerald-400">
+                                <div class="flex-shrink-0 w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+                                    <div class="text-emerald-600 text-xl">✓</div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <div class="font-medium">john doe</div>
+                                        <div class="text-emerald-600 text-xs">• vitals stable</div>
+                                    </div>
+                                    <div class="text-zinc-500 text-sm">bp 118/72 • pulse 84 • spo2 96%</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] text-zinc-400">2 min ago</div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white px-4 py-3 flex gap-4 items-center border-l-4 border-amber-400">
+                                <div class="flex-shrink-0 w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
+                                    <div class="text-amber-600 text-xl">⚠︎</div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <div class="font-medium">jane smith</div>
+                                        <div class="text-amber-600 text-xs">• temp up</div>
+                                    </div>
+                                    <div class="text-zinc-500 text-sm">temp 38.1 • awaiting abx review</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] text-zinc-400">14 min ago</div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white px-4 py-3 flex gap-4 items-center border-l-4 border-red-400">
+                                <div class="flex-shrink-0 w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
+                                    <div class="text-red-600 text-xl">🩸</div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <div class="font-medium">omar khan</div>
+                                        <div class="text-red-600 text-xs">• labs critical</div>
+                                    </div>
+                                    <div class="text-zinc-500 text-sm">k+ 2.9 • contacting senior</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] text-zinc-400">39 min ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patients View -->
+            <div id="view-patients" class="flex-1 overflow-auto hidden">
+                <div class="max-w-7xl mx-auto">
+                    <!-- Patients Header -->
+                    <div class="px-4 pt-6 pb-4 border-b border-zinc-100 bg-white sticky top-0 z-20">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-semibold text-xl">my patients</div>
+                                <div class="text-zinc-500">8 active • 2 to discharge</div>
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="bg-zinc-100 rounded-full flex items-center px-3 py-1">
+                                    <input type="text" id="patient-search" 
+                                           class="bg-transparent border-0 focus:outline-none text-sm placeholder-zinc-400 w-40"
+                                           placeholder="search patients...">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <button onclick="addNewPatient()" 
+                                        class="px-4 py-1 bg-blue-600 text-white text-sm font-medium rounded-xl flex items-center gap-2 hover:bg-blue-700 transition-colors">
+                                    <span>+</span> NEW
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Patients List -->
+                    <div class="p-4 space-y-3" id="patients-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Handover View -->
+            <div id="view-handover" class="flex-1 overflow-auto hidden bg-zinc-50">
+                <div class="max-w-3xl mx-auto px-4 py-8">
+                    <div class="mb-8">
+                        <div class="uppercase tracking-widest text-blue-600 text-xs font-medium mb-1">NIGHT HANDOVER</div>
+                        <div class="text-3xl font-semibold title-font tracking-tighter">ward 3B</div>
+                        <div class="flex items-center gap-2 mt-1 text-sm">
+                            <div>dr. kim to</div>
+                            <div class="bg-amber-100 text-amber-600 px-2 py-0.5 rounded text-xs font-medium">dr. patel</div>
+                            <div>at 0700</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Key Problems -->
+                        <div class="bg-white rounded-3xl p-6">
+                            <div class="flex items-start gap-4">
+                                <div class="mt-1 w-6 h-6 bg-red-100 text-red-600 rounded-xl flex items-center justify-center flex-shrink-0">!</div>
+                                <div>
+                                    <div class="font-medium mb-3">KEY PROBLEMS OVERNIGHT</div>
+                                    
+                                    <div class="space-y-5">
+                                        <div>
+                                            <div class="text-xs text-zinc-500 mb-1">BED 214 • JOHN DOE</div>
+                                            <div class="text-sm">COPD exacerbation - on 2L O2, RR 26</div>
+                                            <div class="text-red-600 text-xs mt-1">watch for worsening resp distress</div>
+                                        </div>
+                                        
+                                        <div>
+                                            <div class="text-xs text-zinc-500 mb-1">BED 107 • JANE SMITH</div>
+                                            <div class="text-sm">Post lap chole - pain 7/10</div>
+                                            <div class="text-amber-600 text-xs mt-1">analgesia due at 0200</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Tasks -->
+                        <div class="bg-white rounded-3xl p-6">
+                            <div class="flex items-start gap-4">
+                                <div class="mt-1 w-6 h-6 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">📋</div>
+                                <div>
+                                    <div class="font-medium mb-3">PENDING TASKS</div>
+                                    
+                                    <div class="space-y-4">
+                                        <div class="flex gap-3">
+                                            <input type="checkbox" class="mt-1 accent-blue-600">
+                                            <div>
+                                                <div>Follow up on troponin for pt in 109</div>
+                                                <div class="text-zinc-500 text-xs">due before 0100</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-3">
+                                            <input type="checkbox" class="mt-1 accent-blue-600" checked>
+                                            <div>
+                                                <div>Call GI for consult on upper GI bleed</div>
+                                                <div class="text-zinc-500 text-xs">pt 312 • 3rd unit blood ordered</div>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-3">
+                                            <input type="checkbox" class="mt-1 accent-blue-600">
+                                            <div>
+                                                <div>Review CXR for pt admitted with ?pneumonia</div>
+                                                <div class="text-zinc-500 text-xs">bed 219</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Watch For -->
+                        <div class="md:col-span-2 bg-white rounded-3xl p-6">
+                            <div class="flex items-start gap-4">
+                                <div class="mt-1 w-6 h-6 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center flex-shrink-0">👁️</div>
+                                <div class="flex-1">
+                                    <div class="font-medium mb-3">WHAT TO WATCH OVERNIGHT</div>
+                                    <div class="prose text-sm">
+                                        Hypotension in post-op patients (3 on ward)<br>
+                                        Fever spikes in oncology patients<br>
+                                        Any chest pain - ECG within 10 mins<br>
+                                        Neuro checks q2h for stroke patient in 126
+                                    </div>
+                                    
+                                    <div class="mt-6 pt-6 border-t border-dashed border-zinc-200">
+                                        <div class="text-xs uppercase tracking-widest text-zinc-400 mb-2">INFORM IF</div>
+                                        <div class="grid grid-cols-3 gap-3">
+                                            <div class="bg-zinc-50 rounded-xl p-3">
+                                                <div class="text-red-600 font-medium">RR &gt;30</div>
+                                                <div class="text-[10px] text-zinc-500">any patient</div>
+                                            </div>
+                                            <div class="bg-zinc-50 rounded-xl p-3">
+                                                <div class="text-red-600 font-medium">Temp &gt;39</div>
+                                                <div class="text-[10px] text-zinc-500">notify immediately</div>
+                                            </div>
+                                            <div class="bg-zinc-50 rounded-xl p-3">
+                                                <div class="text-red-600 font-medium">O2 sat &lt;88</div>
+                                                <div class="text-[10px] text-zinc-500">on any O2</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 flex justify-center">
+                        <button class="flex items-center gap-x-3 bg-zinc-900 text-white px-8 py-4 rounded-2xl text-sm font-medium">
+                            COMPLETE HANDOVER
+                            <div class="w-px h-4 bg-zinc-700"></div>
+                            <span class="opacity-60">SIGN</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patient Workspace -->
+            <div id="view-workspace" class="flex-1 hidden overflow-hidden flex flex-col">
+                <!-- Patient Header -->
+                <div class="sticky-header border-b border-zinc-100 bg-white z-30" id="patient-header">
+                    <div class="px-6 py-4 flex items-center justify-between">
+                        <div class="flex items-center gap-x-4">
+                            <div id="patient-avatar" class="w-14 h-14 bg-zinc-200 rounded-2xl flex-shrink-0"></div>
+                            
+                            <div>
+                                <div class="flex items-center gap-x-3">
+                                    <div id="patient-name" class="font-semibold text-2xl title-font tracking-tighter"></div>
+                                    <div id="patient-status-pill" class="px-3 py-0.5 text-xs font-medium rounded-full"></div>
+                                </div>
+                                <div class="flex items-center gap-x-4 text-sm text-zinc-600">
+                                    <div id="patient-age-sex"></div>
+                                    <div id="patient-bed"></div>
+                                    <div id="patient-diagnosis" class="line-clamp-1 max-w-[180px]"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-x-2">
+                            <button class="px-4 py-2 text-xs border border-zinc-200 rounded-xl hover:bg-zinc-50 transition-colors flex items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2v5m5-2v-5a2 2 0 012-2V5a2 2 0 01-2-2v-.341C7.67 6.165 6 8.388 6 11v5a2 2 0 002 2v2a2 2 0 01-2 2z" />
+                                </svg>
+                                EDIT
+                            </button>
+                            
+                            <button onclick="markCritical()" class="px-4 py-2 text-xs border border-red-200 text-red-700 rounded-xl hover:bg-red-50 transition-colors flex items-center gap-1.5">
+                                MARK CRITICAL
+                            </button>
+                            
+                            <div class="w-px h-7 bg-zinc-100 mx-2"></div>
+                            
+                            <button onclick="closeWorkspace()" class="w-9 h-9 flex items-center justify-center hover:bg-zinc-100 rounded-xl transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6h12v12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="px-6 flex items-center gap-x-8 text-sm overflow-x-auto hide-scroll pb-px" id="workspace-tabs">
+                        <div onclick="switchWorkspaceTab('progress')" class="tab tab-active cursor-pointer py-3 whitespace-nowrap">TODAY'S PROGRESS</div>
+                        <div onclick="switchWorkspaceTab('vitals')" class="tab cursor-pointer py-3 whitespace-nowrap">VITALS</div>
+                        <div onclick="switchWorkspaceTab('meds')" class="tab cursor-pointer py-3 whitespace-nowrap">MEDS + IV</div>
+                        <div onclick="switchWorkspaceTab('investigations')" class="tab cursor-pointer py-3 whitespace-nowrap">INVESTIGATIONS</div>
+                        <div onclick="switchWorkspaceTab('procedures')" class="tab cursor-pointer py-3 whitespace-nowrap">PROCEDURES</div>
+                        <div onclick="switchWorkspaceTab('consults')" class="tab cursor-pointer py-3 whitespace-nowrap">CONSULTS</div>
+                        <div onclick="switchWorkspaceTab('monitoring')" class="tab cursor-pointer py-3 whitespace-nowrap">MONITORING</div>
+                        <div onclick="switchWorkspaceTab('tasks')" class="tab cursor-pointer py-3 whitespace-nowrap">TASKS</div>
+                        <div onclick="switchWorkspaceTab('instructions')" class="tab cursor-pointer py-3 whitespace-nowrap">INSTRUCTIONS</div>
+                        <div onclick="switchWorkspaceTab('handover')" class="tab cursor-pointer py-3 whitespace-nowrap">HANDOVER</div>
+                        <div onclick="switchWorkspaceTab('history')" class="tab cursor-pointer py-3 whitespace-nowrap">HISTORY</div>
+                    </div>
+                </div>
+
+                <!-- Workspace Content -->
+                <div class="flex-1 overflow-auto p-6" id="workspace-content">
+                    <!-- Progress Tab Content (default) -->
+                    <div id="tab-progress" class="tab-content">
+                        <div class="max-w-2xl">
+                            <div class="mb-8">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="section-header">SUBJECTIVE</div>
+                                    <div class="text-[10px] text-zinc-400">10/17 • 21:45</div>
+                                </div>
+                                <textarea class="input-field w-full h-28 resize-y rounded-2xl p-4 text-sm" placeholder="Patient reports worsening cough overnight..."></textarea>
+                            </div>
+
+                            <div class="mb-8">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="section-header">OBJECTIVE</div>
+                                    <div class="text-[10px] text-zinc-400">EXAM • LABS</div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <div class="text-zinc-500 text-xs mb-1">LUNG EXAM</div>
+                                        <div class="input-field rounded-xl px-4 py-3 text-sm">Crackles RLL • no wheeze</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-zinc-500 text-xs mb-1">HEART</div>
+                                        <div class="input-field rounded-xl px-4 py-3 text-sm">Regular • no murmur</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-8">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="section-header">ASSESSMENT</div>
+                                    <div class="px-2 py-0.5 bg-amber-100 text-amber-600 text-xs rounded">POSSIBLE PNA</div>
+                                </div>
+                                <textarea class="input-field w-full h-20 resize-y rounded-2xl p-4 text-sm" placeholder="Likely community acquired pneumonia..."></textarea>
+                            </div>
+
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="section-header">PLAN</div>
+                                    <div>☑︎ REVIEWED BY SENIOR</div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex gap-2 items-start">
+                                        <input type="checkbox" class="mt-[5px] accent-blue-600" checked>
+                                        <div>
+                                            <div>Start ceftriaxone 1g IV q24h</div>
+                                            <div class="text-zinc-500 text-xs">for suspected pneumonia</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2 items-start">
+                                        <input type="checkbox" class="mt-[5px] accent-blue-600">
+                                        <div>
+                                            <div>Order sputum culture</div>
+                                            <div class="text-zinc-500 text-xs">before abx if possible</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2 items-start">
+                                        <input type="checkbox" class="mt-[5px] accent-blue-600" checked>
+                                        <div>
+                                            <div>Explained to patient + family</div>
+                                            <div class="text-zinc-500 text-xs">dx + treatment plan</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vitals Tab -->
+                    <div id="tab-vitals" class="tab-content hidden">
+                        <div class="max-w-md">
+                            <div class="bg-white border border-zinc-100 rounded-3xl p-6">
+                                <div class="grid grid-cols-2 gap-x-12 gap-y-8">
+                                    <div>
+                                        <div class="text-zinc-400 text-xs mb-1">BLOOD PRESSURE</div>
+                                        <div class="flex items-end gap-1">
+                                            <input type="text" value="122" class="input-field w-16 text-center text-3xl font-semibold rounded-xl py-1">
+                                            <div class="text-zinc-300 text-3xl">/</div>
+                                            <input type="text" value="78" class="input-field w-16 text-center text-3xl font-semibold rounded-xl py-1">
+                                        </div>
+                                        <div class="text-[11px] text-emerald-600 mt-0.5">normal</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-zinc-400 text-xs mb-1">PULSE</div>
+                                        <div class="flex items-baseline">
+                                            <input type="text" value="92" class="input-field w-20 text-center text-3xl font-semibold rounded-xl py-1">
+                                            <span class="text-zinc-400 text-xl ml-1">bpm</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-zinc-400 text-xs mb-1">TEMPERATURE</div>
+                                        <div class="flex items-baseline">
+                                            <input type="text" value="37.4" class="input-field w-20 text-center text-3xl font-semibold rounded-xl py-1">
+                                            <span class="text-zinc-400 text-xl ml-1">°C</span>
+                                        </div>
+                                        <div class="text-[11px] text-amber-600 mt-0.5">mild pyrexia</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-zinc-400 text-xs mb-1">O₂ SATURATION</div>
+                                        <div class="flex items-baseline">
+                                            <input type="text" value="94" class="input-field w-20 text-center text-3xl font-semibold rounded-xl py-1">
+                                            <span class="text-zinc-400 text-xl ml-1">%</span>
+                                        </div>
+                                        <div class="text-[11px] text-emerald-600 mt-0.5">on 1L O₂</div>
+                                    </div>
+                                </div>
+
+                                <div class="border-t border-dotted border-zinc-200 mt-8 pt-8">
+                                    <div class="text-xs uppercase text-zinc-400 tracking-widest mb-4">LAST 3 READINGS</div>
+                                    <div class="space-y-4">
+                                        <div class="flex justify-between text-sm">
+                                            <div>19:30</div>
+                                            <div>118/76 • 88bpm • 36.8° • 95%</div>
+                                        </div>
+                                        <div class="flex justify-between text-sm">
+                                            <div>17:15</div>
+                                            <div>124/82 • 96bpm • 37.2° • 93%</div>
+                                        </div>
+                                        <div class="flex justify-between text-sm">
+                                            <div>14:00</div>
+                                            <div>119/71 • 82bpm • 36.9° • 97%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Meds Tab -->
+                    <div id="tab-meds" class="tab-content hidden">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <div class="font-medium">MEDICATIONS</div>
+                                    <div class="text-zinc-500 text-sm">8 scheduled • 2 PRN</div>
+                                </div>
+                                <button onclick="addMedication()" class="flex items-center px-4 py-2 bg-white border border-zinc-200 rounded-2xl text-sm hover:border-zinc-300 transition-colors">
+                                    + ADD DRUG
+                                </button>
+                            </div>
+
+                            <div class="bg-white rounded-3xl overflow-hidden border border-zinc-100" id="meds-table">
+                                <!-- Populated by JS -->
+                            </div>
+
+                            <div class="mt-8">
+                                <div class="font-medium mb-3 flex items-center gap-2">
+                                    IV FLUIDS
+                                    <div class="text-xs px-2 py-0.5 bg-blue-50 text-blue-600 rounded">2 ACTIVE</div>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div class="bg-white border border-zinc-100 rounded-2xl p-4">
+                                        <div class="flex justify-between">
+                                            <div>
+                                                <div class="font-medium">Normal Saline</div>
+                                                <div class="text-xs text-zinc-500">0.9% NaCl</div>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="font-mono text-xl">125</div>
+                                                <div class="text-[11px] text-zinc-400 -mt-1">ml/hr</div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4 text-xs text-zinc-500">for maintenance • review in 4h</div>
+                                    </div>
+                                    
+                                    <div class="bg-white border border-zinc-100 rounded-2xl p-4">
+                                        <div class="flex justify-between">
+                                            <div>
+                                                <div class="font-medium">Dextrose 5%</div>
+                                                <div class="text-xs text-zinc-500">in water</div>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="font-mono text-xl">75</div>
+                                                <div class="text-[11px] text-zinc-400 -mt-1">ml/hr</div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4 text-xs text-zinc-500">NPO patient • keep sugars stable</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investigations Tab -->
+                    <div id="tab-investigations" class="tab-content hidden">
+                        <div class="flex gap-4 border-b pb-4 mb-6">
+                            <div onclick="switchInvTab('labs')" class="inv-tab inv-tab-active cursor-pointer px-5 py-2 rounded-2xl">LABS</div>
+                            <div onclick="switchInvTab('imaging')" class="inv-tab cursor-pointer px-5 py-2 rounded-2xl">IMAGING</div>
+                        </div>
+
+                        <div id="inv-labs">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-zinc-100">
+                                        <th class="text-left py-3 text-xs font-medium text-zinc-500">TEST</th>
+                                        <th class="text-left py-3 text-xs font-medium text-zinc-500">ORDERED</th>
+                                        <th class="text-left py-3 text-xs font-medium text-zinc-500">STATUS</th>
+                                        <th class="text-left py-3 text-xs font-medium text-zinc-500">RESULT</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-zinc-50 text-sm">
+                                    <tr class="table-row">
+                                        <td class="py-4 font-medium">WBC COUNT</td>
+                                        <td class="py-4 text-zinc-500">TODAY 09:20</td>
+                                        <td class="py-4"><span class="bg-emerald-100 text-emerald-600 px-2 py-px rounded text-xs">DONE</span></td>
+                                        <td class="py-4 text-emerald-600">11.4 × 10⁹/L</td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td class="py-4 font-medium">CRP</td>
+                                        <td class="py-4 text-zinc-500">TODAY 09:20</td>
+                                        <td class="py-4"><span class="bg-amber-100 text-amber-600 px-2 py-px rounded text-xs">PENDING</span></td>
+                                        <td class="py-4 text-zinc-500">-</td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td class="py-4 font-medium">TROPONIN</td>
+                                        <td class="py-4 text-zinc-500">YESTERDAY 22:10</td>
+                                        <td class="py-4"><span class="bg-emerald-100 text-emerald-600 px-2 py-px rounded text-xs">DONE</span></td>
+                                        <td class="py-4">0.02 ng/L</td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td class="py-4 font-medium">ELECTROLYTES</td>
+                                        <td class="py-4 text-zinc-500">TODAY 14:30</td>
+                                        <td class="py-4"><span class="bg-red-100 text-red-600 px-2 py-px rounded text-xs">CRITICAL</span></td>
+                                        <td class="py-4 text-red-600">K+ 3.1 mmol/L</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div id="inv-imaging" class="hidden">
+                            <div class="space-y-3">
+                                <div class="bg-white p-4 rounded-2xl border border-zinc-100 flex gap-4">
+                                    <div class="w-14 h-14 bg-zinc-100 rounded-xl flex-shrink-0 flex items-center justify-center">
+                                        📸
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-medium">Chest X-Ray</div>
+                                        <div class="text-zinc-500 text-sm">Portable • today 11:20</div>
+                                        <div class="mt-3 text-xs bg-emerald-50 text-emerald-600 inline-block px-3 py-1 rounded-full">REPORTED: mild RLL consolidation</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-right">
+                                            <div class="text-emerald-600 text-xs">DONE</div>
+                                            <div class="text-[10px] text-zinc-400">2h ago</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white p-4 rounded-2xl border border-zinc-100 flex gap-4 opacity-60">
+                                    <div class="w-14 h-14 bg-zinc-100 rounded-xl flex-shrink-0 flex items-center justify-center">
+                                        🩺
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-medium">Echocardiogram</div>
+                                        <div class="text-zinc-500 text-sm">Ordered yesterday • pending</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-right">
+                                            <div class="text-amber-600 text-xs">PENDING</div>
+                                            <div class="text-[10px] text-zinc-400">est. 24h</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Procedures Tab -->
+                    <div id="tab-procedures" class="tab-content hidden">
+                        <div class="max-w-lg">
+                            <button onclick="logProcedure()" class="mb-4 flex items-center gap-2 px-5 py-3 border border-dashed border-zinc-300 hover:border-zinc-400 rounded-2xl w-full justify-center text-zinc-500 hover:text-zinc-700 transition-colors">
+                                <span class="text-lg">+</span> LOG INTERVENTION
+                            </button>
+
+                            <div class="space-y-px">
+                                <div class="bg-white px-5 py-4 flex items-center gap-4 border-b border-zinc-100">
+                                    <div>
+                                        <div class="text-xs text-zinc-400">TODAY 18:10</div>
+                                        <div class="font-medium">IV CANNULA INSERTION</div>
+                                    </div>
+                                    <div class="ml-auto text-right">
+                                        <div class="text-emerald-600 text-xs">SUCCESSFUL</div>
+                                        <div class="text-[10px]">by me</div>
+                                    </div>
+                                </div>
+                                <div class="bg-white px-5 py-4 flex items-center gap-4 border-b border-zinc-100">
+                                    <div>
+                                        <div class="text-xs text-zinc-400">YESTERDAY 23:40</div>
+                                        <div class="font-medium">NASOGASTRIC TUBE</div>
+                                    </div>
+                                    <div class="ml-auto text-right">
+                                        <div class="text-emerald-600 text-xs">SUCCESSFUL</div>
+                                        <div class="text-[10px]">by senior</div>
+                                    </div>
+                                </div>
+                                <div class="bg-white px-5 py-4 flex items-center gap-4">
+                                    <div>
+                                        <div class="text-xs text-zinc-400">YESTERDAY 09:15</div>
+                                        <div class="font-medium">BLOOD CULTURES</div>
+                                    </div>
+                                    <div class="ml-auto text-right">
+                                        <div class="text-emerald-600 text-xs">COLLECTED</div>
+                                        <div class="text-[10px]">lab sent</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Consults Tab -->
+                    <div id="tab-consults" class="tab-content hidden">
+                        <div>
+                            <div class="mb-5 flex items-center gap-2">
+                                <div class="px-4 py-2 bg-white rounded-2xl border border-zinc-200 text-sm">CARDIOLOGY</div>
+                                <div class="px-4 py-2 bg-white rounded-2xl border border-zinc-200 text-sm">NEUROLOGY</div>
+                                <div class="px-4 py-2 bg-white rounded-2xl border border-zinc-200 text-sm">GASTRO</div>
+                                <div class="px-4 py-2 text-zinc-400">+ ADD</div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div class="p-5 bg-white rounded-3xl border border-zinc-100">
+                                    <div class="flex justify-between mb-4">
+                                        <div>
+                                            <div class="font-medium">CARDIOLOGY</div>
+                                            <div class="text-zinc-500 text-xs">10/16 • 14:30</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-emerald-600 text-xs">ADVICE GIVEN</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-sm">Increase beta blocker dose. Repeat troponin in AM.</div>
+                                    <div class="mt-4 text-[11px] text-zinc-500">ACTION: dose changed • labs ordered</div>
+                                </div>
+
+                                <div class="p-5 bg-white rounded-3xl border border-zinc-100">
+                                    <div class="flex justify-between mb-4">
+                                        <div>
+                                            <div class="font-medium">NEUROLOGY</div>
+                                            <div class="text-zinc-500 text-xs">10/15 • 21:00</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-amber-600 text-xs">PENDING</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-sm opacity-75">Awaiting callback regarding ?TIA symptoms</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monitoring Tab -->
+                    <div id="tab-monitoring" class="tab-content hidden">
+                        <div class="max-w-md">
+                            <div class="uppercase text-zinc-400 text-xs tracking-widest font-medium mb-4">RED FLAGS TO MONITOR</div>
+                            
+                            <div class="grid grid-cols-2 gap-3 mb-9">
+                                <label class="flex items-start gap-3 bg-white border border-zinc-100 rounded-2xl px-4 py-3 cursor-pointer hover:border-zinc-200 transition-colors">
+                                    <input type="checkbox" class="accent-red-600 mt-0.5" checked>
+                                    <div>
+                                        <div>Fever &gt;38°C</div>
+                                        <div class="text-xs text-zinc-500">q4h temp check</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-start gap-3 bg-white border border-zinc-100 rounded-2xl px-4 py-3 cursor-pointer hover:border-zinc-200 transition-colors">
+                                    <input type="checkbox" class="accent-red-600 mt-0.5">
+                                    <div>
+                                        <div>Hypotension</div>
+                                        <div class="text-xs text-zinc-500">systolic &lt;90</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-start gap-3 bg-white border border-zinc-100 rounded-2xl px-4 py-3 cursor-pointer hover:border-zinc-200 transition-colors">
+                                    <input type="checkbox" class="accent-red-600 mt-0.5" checked>
+                                    <div>
+                                        <div>Desaturation</div>
+                                        <div class="text-xs text-zinc-500">&lt;90% on O₂</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-start gap-3 bg-white border border-zinc-100 rounded-2xl px-4 py-3 cursor-pointer hover:border-zinc-200 transition-colors">
+                                    <input type="checkbox" class="accent-red-600 mt-0.5">
+                                    <div>
+                                        <div>Altered sensorium</div>
+                                        <div class="text-xs text-zinc-500">GCS drop</div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div>
+                                <div class="text-xs uppercase tracking-widest text-zinc-400 font-medium mb-2">IF THIS HAPPENS → DO THIS</div>
+                                <textarea class="input-field w-full h-32 p-4 rounded-3xl" placeholder="If patient becomes more short of breath or confused, page senior resident immediately and prepare for possible ICU transfer..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tasks Tab -->
+                    <div id="tab-tasks" class="tab-content hidden">
+                        <div class="max-w-sm">
+                            <div class="mb-6">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <div class="font-medium">TODAY'S TASKS</div>
+                                    <div class="bg-emerald-100 text-emerald-600 px-2 py-px text-xs rounded-full">4 COMPLETE</div>
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <div class="flex gap-3 bg-white px-4 py-3 rounded-2xl items-start">
+                                        <input type="checkbox" class="accent-blue-600 mt-px" checked>
+                                        <div class="-mt-px">
+                                            <div>Administer evening antibiotics</div>
+                                            <div class="text-[10px] text-zinc-500">bed 214 • 2000</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-3 bg-white px-4 py-3 rounded-2xl items-start">
+                                        <input type="checkbox" class="accent-blue-600 mt-px">
+                                        <div class="-mt-px">
+                                            <div>Check post-transfusion labs</div>
+                                            <div class="text-[10px] text-zinc-500">pt 107 • due 2300</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-3 bg-white px-4 py-3 rounded-2xl items-start">
+                                        <input type="checkbox" class="accent-blue-600 mt-px" checked>
+                                        <div class="-mt-px">
+                                            <div>Update family on status</div>
+                                            <div class="text-[10px] text-zinc-500">bed 312</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="uppercase text-zinc-400 text-xs font-medium tracking-widest mb-3">UPCOMING</div>
+                                <div class="bg-amber-50 border border-amber-100 rounded-3xl p-5">
+                                    <div class="flex gap-3">
+                                        <div class="text-2xl">🩺</div>
+                                        <div>
+                                            <div class="font-medium">Senior ward round</div>
+                                            <div class="text-amber-600 text-sm">in 45 minutes</div>
+                                            <div class="text-xs text-zinc-500 mt-1">prepare 3 patients for discussion</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instructions Tab -->
+                    <div id="tab-instructions" class="tab-content hidden">
+                        <div>
+                            <div class="mb-4 uppercase text-xs tracking-widest text-zinc-400 font-medium">PLAN FOR TOMORROW</div>
+                            <textarea class="input-field w-full h-48 p-5 rounded-3xl text-sm" placeholder="Discharge planning for bed 107 if labs ok • Repeat CXR for bed 219 • Discuss with team re: oncology patient transfer..."></textarea>
+                            
+                            <div class="mt-10">
+                                <div class="mb-4 uppercase text-xs tracking-widest text-zinc-400 font-medium">SENIOR INSTRUCTIONS</div>
+                                <div class="bg-zinc-900 text-white rounded-3xl p-6 text-sm leading-relaxed">
+                                    Please ensure all post-op patients have DVT prophylaxis ordered.<br><br>
+                                    The GI bleed patient may need urgent scope if hemoglobin drops again.<br><br>
+                                    - Dr. Chen, 10/16 23:10
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Handover Tab -->
+                    <div id="tab-handover" class="tab-content hidden">
+                        <div class="max-w-lg mx-auto">
+                            <div class="bg-gradient-to-br from-zinc-900 to-black text-white rounded-3xl p-8">
+                                <div class="uppercase text-blue-400 text-xs tracking-[0.2em] font-medium mb-1">HANDOVER NOTE</div>
+                                <div class="text-2xl font-medium title-font">KEY POINTS FOR NEXT SHIFT</div>
+                                
+                                <div class="my-8 space-y-6">
+                                    <div>
+                                        <div class="uppercase text-[10px] tracking-widest opacity-60">PROBLEM 1</div>
+                                        <div class="font-medium">Respiratory distress in bed 214</div>
+                                        <div class="text-sm opacity-75 mt-px">on 4L now • ABG pending</div>
+                                    </div>
+                                    <div>
+                                        <div class="uppercase text-[10px] tracking-widest opacity-60">PROBLEM 2</div>
+                                        <div class="font-medium">Unexplained fever in oncology patient</div>
+                                        <div class="text-sm opacity-75 mt-px">cultures sent • broad spectrum abx started</div>
+                                    </div>
+                                </div>
+
+                                <div class="pt-6 border-t border-white/20 flex items-center gap-2 text-xs">
+                                    <div>TO WATCH:</div>
+                                    <div class="bg-white/10 px-3 py-1 rounded-full">O₂ requirements</div>
+                                    <div class="bg-white/10 px-3 py-1 rounded-full">urine output</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 text-center">
+                                <div class="inline-flex items-center gap-2 bg-white px-6 py-3 rounded-2xl shadow text-sm">
+                                    <div class="text-emerald-500">✓</div>
+                                    <div>READY FOR HANDOVER</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- History Tab -->
+                    <div id="tab-history" class="tab-content hidden">
+                        <div class="max-w-xl">
+                            <div class="border border-zinc-100 bg-white rounded-3xl divide-y divide-zinc-50 overflow-hidden">
+                                <div class="p-6">
+                                    <div class="uppercase text-xs text-zinc-400 font-medium tracking-wider mb-2">CHIEF COMPLAINT</div>
+                                    <div class="text-zinc-900">Shortness of breath and cough for 3 days</div>
+                                </div>
+                                <div class="p-6">
+                                    <div class="uppercase text-xs text-zinc-400 font-medium tracking-wider mb-2">PAST HISTORY</div>
+                                    <div class="space-x-2">
+                                        <span class="bg-zinc-100 px-3 py-1 rounded-full text-xs">COPD</span>
+                                        <span class="bg-zinc-100 px-3 py-1 rounded-full text-xs">Hypertension</span>
+                                        <span class="bg-zinc-100 px-3 py-1 rounded-full text-xs">Type 2 DM</span>
+                                    </div>
+                                </div>
+                                <div class="p-6">
+                                    <div class="uppercase text-xs text-zinc-400 font-medium tracking-wider mb-2">SURGICAL HISTORY</div>
+                                    <div>Appendectomy 2014 • Cholecystectomy 2021</div>
+                                </div>
+                                <div class="p-6">
+                                    <div class="uppercase text-xs text-zinc-400 font-medium tracking-wider mb-2">ALLERGIES</div>
+                                    <div class="flex gap-2">
+                                        <div class="bg-red-50 text-red-600 px-4 py-1 rounded-full text-xs">Penicillin (rash)</div>
+                                        <div class="bg-red-50 text-red-600 px-4 py-1 rounded-full text-xs">Shellfish</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 text-xs text-zinc-400 px-1">
+                                Last updated by Dr. Kim • 10/16 18:20
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Bar in Workspace -->
+                <div class="border-t border-zinc-100 bg-white px-6 py-3 flex items-center gap-4 md:hidden">
+                    <button class="flex-1 py-3 text-xs font-medium border border-zinc-200 rounded-2xl">NOTES</button>
+                    <button class="flex-1 py-3 text-xs font-medium bg-zinc-900 text-white rounded-2xl">SAVE PROGRESS</button>
+                    <button onclick="showPrintOptions()" class="flex-1 py-3 text-xs font-medium border border-zinc-200 rounded-2xl">PRINT THIS CASE</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation (Mobile) -->
+        <div class="bottom-nav fixed bottom-0 left-0 right-0 bg-white border-t border-zinc-200 md:hidden z-50">
+            <div class="max-w-md mx-auto grid grid-cols-4">
+                <div onclick="switchView('dashboard')" class="nav-item flex flex-col items-center py-2 cursor-pointer nav-active" id="nav-dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1v-5m10-10l2 2m-2-2v10a1 1 0 01-1 1v-5m-6 0a1 1 0 001-1v5" />
+                    </svg>
+                    <div class="text-[10px]">DASH</div>
+                </div>
+                <div onclick="switchView('patients')" class="nav-item flex flex-col items-center py-2 cursor-pointer" id="nav-patients">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M5 19.291V5a2 2 0 01-2-2v-.341C7.67 6.165 6 8.388 6 11v8.291m12-8.291a4 4 0 110 5.292M12 4.354a4 4 0 00-4 4.146V19.291" />
+                    </svg>
+                    <div class="text-[10px]">PATIENTS</div>
+                </div>
+                <div onclick="switchView('handover')" class="nav-item flex flex-col items-center py-2 cursor-pointer" id="nav-handover">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div class="text-[10px]">HANDOVER</div>
+                </div>
+                <div onclick="showPrintOptions()" class="nav-item flex flex-col items-center py-2 cursor-pointer" id="nav-print">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H3a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
+                    </svg>
+                    <div class="text-[10px]">PRINT</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <div class="desktop-nav fixed left-0 top-16 bottom-0 w-56 border-r border-zinc-100 bg-white hidden md:block">
+            <div class="pt-8 px-4">
+                <div class="uppercase text-[10px] font-medium tracking-widest text-zinc-400 mb-4 px-3">MAIN</div>
+                
+                <div onclick="switchView('dashboard')" class="desktop-nav-item flex items-center gap-x-3 px-4 py-[13px] hover:bg-zinc-50 rounded-xl cursor-pointer mb-0.5 transition-colors desktop-nav-active" id="dnav-dashboard">
+                    <div class="w-5">🏠</div>
+                    <div class="font-medium text-sm">Dashboard</div>
+                </div>
+                <div onclick="switchView('patients')" class="desktop-nav-item flex items-center gap-x-3 px-4 py-[13px] hover:bg-zinc-50 rounded-xl cursor-pointer mb-0.5 transition-colors" id="dnav-patients">
+                    <div class="w-5">🧍</div>
+                    <div class="font-medium text-sm">My Patients</div>
+                    <div class="ml-auto bg-emerald-100 text-emerald-600 text-[10px] px-1.5 rounded">8</div>
+                </div>
+                <div onclick="switchView('handover')" class="desktop-nav-item flex items-center gap-x-3 px-4 py-[13px] hover:bg-zinc-50 rounded-xl cursor-pointer mb-0.5 transition-colors" id="dnav-handover">
+                    <div class="w-5">🔄</div>
+                    <div class="font-medium text-sm">Handover</div>
+                </div>
+
+                <div class="h-px bg-zinc-100 my-6 mx-3"></div>
+
+                <div class="uppercase text-[10px] font-medium tracking-widest text-zinc-400 mb-4 px-3">TOOLS</div>
+                
+                <div class="flex items-center gap-x-3 px-4 py-[13px] hover:bg-zinc-50 rounded-xl cursor-pointer mb-0.5 transition-colors opacity-40">
+                    <div class="w-5">📅</div>
+                    <div class="font-medium text-sm">Schedule</div>
+                </div>
+                <div onclick="showPrintOptions()" class="flex items-center gap-x-3 px-4 py-[13px] hover:bg-zinc-50 rounded-xl cursor-pointer mb-0.5 transition-colors" id="dnav-print">
+                    <div class="w-5">🖨️</div>
+                    <div class="font-medium text-sm">Print Center</div>
+                </div>
+                <div class="flex items-center gap-x-3 px-4 py-[13px] hover:bg-zinc-50 rounded-xl cursor-pointer transition-colors opacity-40">
+                    <div class="w-5">📚</div>
+                    <div class="font-medium text-sm">Learning</div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-8 left-0 right-0 px-6">
+                <div class="bg-zinc-50 rounded-2xl p-4">
+                    <div class="text-xs text-zinc-500">NEXT SHIFT STARTS IN</div>
+                    <div class="font-mono text-2xl font-medium tracking-tighter">6H 14M</div>
+                    <div class="h-1 bg-zinc-200 rounded mt-3">
+                        <div class="bg-blue-600 w-3/4 h-1 rounded"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Patient Modal -->
+        <div id="add-patient-modal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-50">
+            <div class="bg-white rounded-3xl w-full max-w-md mx-4 overflow-hidden">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <div class="font-semibold">Add new patient</div>
+                            <div class="text-zinc-500 text-sm">Admitted to ward 3B</div>
+                        </div>
+                        <div onclick="hideAddPatientModal()" class="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-zinc-100 rounded-full">
+                            ✕
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div>
+                            <div class="text-xs uppercase font-medium text-zinc-400 tracking-wider mb-1.5">NAME</div>
+                            <input type="text" id="new-patient-name" class="input-field w-full py-3 px-4 rounded-2xl" placeholder="Full name">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <div class="text-xs uppercase font-medium text-zinc-400 tracking-wider mb-1.5">AGE</div>
+                                <input type="text" id="new-patient-age" class="input-field w-full py-3 px-4 rounded-2xl" placeholder="42">
+                            </div>
+                            <div>
+                                <div class="text-xs uppercase font-medium text-zinc-400 tracking-wider mb-1.5">SEX</div>
+                                <div class="flex gap-2">
+                                    <div onclick="selectSex('M')" id="sex-m" class="flex-1 py-3 text-center border-2 border-transparent hover:border-zinc-200 rounded-2xl cursor-pointer transition-all">M</div>
+                                    <div onclick="selectSex('F')" id="sex-f" class="flex-1 py-3 text-center border-2 border-transparent hover:border-zinc-200 rounded-2xl cursor-pointer transition-all">F</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="text-xs uppercase font-medium text-zinc-400 tracking-wider mb-1.5">BED NUMBER</div>
+                            <input type="text" id="new-patient-bed" class="input-field w-full py-3 px-4 rounded-2xl" placeholder="312">
+                        </div>
+
+                        <div>
+                            <div class="text-xs uppercase font-medium text-zinc-400 tracking-wider mb-1.5">PRIMARY DIAGNOSIS</div>
+                            <input type="text" id="new-patient-diagnosis" class="input-field w-full py-3 px-4 rounded-2xl" placeholder="Community acquired pneumonia">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t flex">
+                    <button onclick="hideAddPatientModal()" class="flex-1 py-4 text-sm font-medium border-r">CANCEL</button>
+                    <button onclick="confirmAddPatient()" class="flex-1 py-4 text-sm font-medium text-blue-600">ADD TO LIST</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Print Options Modal -->
+        <div id="print-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-3xl w-full max-w-lg print-modal">
+                <div class="px-6 pt-6 pb-4 border-b flex items-center">
+                    <div>
+                        <div class="font-semibold">Print Patient Notes</div>
+                        <div class="text-zinc-500">Select sections to include</div>
+                    </div>
+                    <div onclick="hidePrintModal()" class="ml-auto cursor-pointer text-zinc-400 hover:text-zinc-600">✕</div>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <div>
+                        <div class="uppercase text-[10px] tracking-widest font-medium text-zinc-400 mb-3">CASE SUMMARY</div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="print-option border-2 border-blue-600 bg-blue-50 rounded-2xl p-4 cursor-pointer">
+                                <div class="font-medium">Full Patient Summary</div>
+                                <div class="text-xs text-zinc-500">All sections • 2 pages</div>
+                            </div>
+                            <div class="print-option border border-zinc-200 hover:border-zinc-300 rounded-2xl p-4 cursor-pointer transition-colors">
+                                <div class="font-medium">Today's Progress Note</div>
+                                <div class="text-xs text-zinc-500">SOAP only • 1 page</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="uppercase text-[10px] tracking-widest font-medium text-zinc-400 mb-3">QUICK PRINTS</div>
+                        <div class="flex gap-2">
+                            <div class="print-option flex-1 border border-zinc-200 hover:border-zinc-300 rounded-2xl p-4 cursor-pointer transition-colors">
+                                <div class="font-medium">Medication Chart</div>
+                                <div class="text-xs text-zinc-500">Current drugs only</div>
+                            </div>
+                            <div class="print-option flex-1 border border-zinc-200 hover:border-zinc-300 rounded-2xl p-4 cursor-pointer transition-colors">
+                                <div class="font-medium">Handover Sheet</div>
+                                <div class="text-xs text-zinc-500">Tonight's key points</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="accent-blue-600" checked>
+                            <span class="text-sm">Include patient photo from chart</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bg-zinc-50 border-t p-4 flex gap-3">
+                    <button onclick="hidePrintModal()" class="flex-1 py-3 text-sm border border-zinc-200 rounded-2xl">CANCEL</button>
+                    <button onclick="performPrint()" class="flex-1 py-3 bg-zinc-900 text-white text-sm rounded-2xl font-medium flex items-center justify-center gap-2">
+                        PRINT SELECTED
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M14 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="text-center py-4">
+                    <div class="text-[10px] text-zinc-400">Using desktop gives better formatting</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Toast -->
+        <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-zinc-900 text-white text-sm px-6 py-3 rounded-2xl shadow-xl hidden flex items-center gap-3 z-50">
+            <div>✅</div>
+            <div id="toast-message"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentView = 'dashboard'
+        let currentWorkspaceTab = 'progress'
+        let currentPatient = null
+
+        const patients = [
+            {
+                id: 1,
+                name: "John Doe",
+                age: 68,
+                sex: "M",
+                bed: "214",
+                ward: "3B",
+                diagnosis: "COPD exacerbation",
+                status: "stable",
+                avatarColor: "bg-emerald-100",
+                avatarInitial: "J"
+            },
+            {
+                id: 2,
+                name: "Jane Smith",
+                age: 44,
+                sex: "F",
+                bed: "107",
+                ward: "3B",
+                diagnosis: "Post lap chole",
+                status: "watch",
+                avatarColor: "bg-amber-100",
+                avatarInitial: "J"
+            },
+            {
+                id: 3,
+                name: "Omar Khan",
+                age: 52,
+                sex: "M",
+                bed: "312",
+                ward: "3B",
+                diagnosis: "Acute kidney injury",
+                status: "critical",
+                avatarColor: "bg-red-100",
+                avatarInitial: "O"
+            },
+            {
+                id: 4,
+                name: "Elena Vargas",
+                age: 29,
+                sex: "F",
+                bed: "219",
+                ward: "3B",
+                diagnosis: "Suspected pneumonia",
+                status: "stable",
+                avatarColor: "bg-emerald-100",
+                avatarInitial: "E"
+            },
+            {
+                id: 5,
+                name: "Robert Chen",
+                age: 81,
+                sex: "M",
+                bed: "105",
+                ward: "3B",
+                diagnosis: "CHF exacerbation",
+                status: "watch",
+                avatarColor: "bg-amber-100",
+                avatarInitial: "R"
+            },
+            {
+                id: 6,
+                name: "Maria Lopez",
+                age: 63,
+                sex: "F",
+                bed: "308",
+                ward: "3B",
+                diagnosis: "Post knee arthroplasty",
+                status: "stable",
+                avatarColor: "bg-emerald-100",
+                avatarInitial: "M"
+            },
+            {
+                id: 7,
+                name: "Liam Patel",
+                age: 35,
+                sex: "M",
+                bed: "126",
+                ward: "3B",
+                diagnosis: "Acute stroke",
+                status: "critical",
+                avatarColor: "bg-red-100",
+                avatarInitial: "L"
+            },
+            {
+                id: 8,
+                name: "Sophie Kim",
+                age: 19,
+                sex: "F",
+                bed: "201",
+                ward: "3B",
+                diagnosis: "Diabetic ketoacidosis",
+                status: "watch",
+                avatarColor: "bg-amber-100",
+                avatarInitial: "S"
+            }
+        ]
+
+        let medications = [
+            {
+                drug: "Ceftriaxone",
+                dose: "1g",
+                route: "IV",
+                frequency: "q24h",
+                start: "10/16"
+            },
+            {
+                drug: "Metoprolol",
+                dose: "50mg",
+                route: "PO",
+                frequency: "q12h",
+                start: "10/15"
+            },
+            {
+                drug: "Enoxaparin",
+                dose: "40mg",
+                route: "SC",
+                frequency: "q24h",
+                start: "10/17"
+            },
+            {
+                drug: "Acetaminophen",
+                dose: "650mg",
+                route: "PO",
+                frequency: "q6h PRN",
+                start: "10/17"
+            }
+        ]
+
+        function switchView(view) {
+            // Hide all views
+            document.getElementById('view-dashboard').classList.add('hidden')
+            document.getElementById('view-patients').classList.add('hidden')
+            document.getElementById('view-handover').classList.add('hidden')
+            document.getElementById('view-workspace').classList.add('hidden')
+
+            // Show selected
+            if (view === 'dashboard') {
+                document.getElementById('view-dashboard').classList.remove('hidden')
+            } else if (view === 'patients') {
+                document.getElementById('view-patients').classList.remove('hidden')
+                renderPatientsList()
+            } else if (view === 'handover') {
+                document.getElementById('view-handover').classList.remove('hidden')
+            }
+
+            currentView = view
+
+            // Update mobile nav
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('nav-active'))
+            
+            if (view === 'dashboard') document.getElementById('nav-dashboard').classList.add('nav-active')
+            if (view === 'patients') document.getElementById('nav-patients').classList.add('nav-active')
+            if (view === 'handover') document.getElementById('nav-handover').classList.add('nav-active')
+
+            // Update desktop nav
+            document.querySelectorAll('.desktop-nav-item').forEach(el => el.classList.remove('desktop-nav-active'))
+            
+            if (view === 'dashboard') document.getElementById('dnav-dashboard').classList.add('desktop-nav-active')
+            if (view === 'patients') document.getElementById('dnav-patients').classList.add('desktop-nav-active')
+            if (view === 'handover') document.getElementById('dnav-handover').classList.add('desktop-nav-active')
+        }
+
+        function renderPatientsList() {
+            const container = document.getElementById('patients-list')
+            container.innerHTML = ''
+
+            patients.forEach(patient => {
+                let statusColor = ''
+                let statusText = ''
+                
+                if (patient.status === 'stable') {
+                    statusColor = 'bg-emerald-400'
+                    statusText = 'STABLE'
+                } else if (patient.status === 'watch') {
+                    statusColor = 'bg-amber-400'
+                    statusText = 'WATCH'
+                } else if (patient.status === 'critical') {
+                    statusColor = 'bg-red-400'
+                    statusText = 'CRITICAL'
+                }
+
+                const div = document.createElement('div')
+                div.className = 'patient-card bg-white border border-zinc-100 rounded-3xl p-5 cursor-pointer active:scale-[0.985] transition-transform'
+                div.onclick = () => openPatientWorkspace(patient.id)
+                
+                div.innerHTML = `
+                    <div class="flex items-start gap-4">
+                        <div class="${patient.avatarColor} w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <span class="text-3xl font-bold text-zinc-800/70">${patient.avatarInitial}</span>
+                        </div>
+                        
+                        <div class="flex-1 min-w-0 pt-1">
+                            <div class="flex items-center gap-x-3">
+                                <div class="font-semibold text-xl tracking-tight">${patient.name}</div>
+                                <div class="status-dot ${statusColor}"></div>
+                            </div>
+                            
+                            <div class="flex items-center gap-x-4 mt-0.5">
+                                <div class="text-zinc-500">${patient.age} • ${patient.sex}</div>
+                                <div class="text-zinc-500">Bed ${patient.bed}</div>
+                            </div>
+                            
+                            <div class="mt-3 text-sm text-zinc-600 line-clamp-2">${patient.diagnosis}</div>
+                            
+                            <div class="mt-4 flex items-center gap-2">
+                                <div class="uppercase text-[10px] bg-zinc-100 px-2 py-px rounded">3B</div>
+                                <div class="uppercase text-[10px] bg-zinc-100 px-2 py-px rounded">MED</div>
+                                <div class="ml-auto text-xs text-zinc-400">admitted 10/14</div>
+                            </div>
+                        </div>
+                    </div>
+                `
+                
+                container.appendChild(div)
+            })
+        }
+
+        function openPatientWorkspace(id) {
+            currentPatient = patients.find(p => p.id === id)
+            
+            if (!currentPatient) return
+
+            // Fill header
+            document.getElementById('patient-name').textContent = currentPatient.name
+            
+            const statusPill = document.getElementById('patient-status-pill')
+            if (currentPatient.status === 'stable') {
+                statusPill.className = 'bg-emerald-100 text-emerald-700 px-4 py-1 text-xs font-medium rounded-full'
+                statusPill.textContent = 'STABLE'
+            } else if (currentPatient.status === 'watch') {
+                statusPill.className = 'bg-amber-100 text-amber-700 px-4 py-1 text-xs font-medium rounded-full'
+                statusPill.textContent = 'WATCH'
+            } else {
+                statusPill.className = 'bg-red-100 text-red-700 px-4 py-1 text-xs font-medium rounded-full'
+                statusPill.textContent = 'CRITICAL'
+            }
+            
+            document.getElementById('patient-age-sex').textContent = `${currentPatient.age}yo ${currentPatient.sex}`
+            document.getElementById('patient-bed').textContent = `Bed ${currentPatient.bed} • ${currentPatient.ward}`
+            document.getElementById('patient-diagnosis').textContent = currentPatient.diagnosis
+            
+            // Fake avatar
+            const avatar = document.getElementById('patient-avatar')
+            avatar.className = `${currentPatient.avatarColor} w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0`
+            avatar.innerHTML = `<span class="text-4xl font-bold text-zinc-800/80">${currentPatient.avatarInitial}</span>`
+
+            // Switch to workspace view
+            document.getElementById('view-dashboard').classList.add('hidden')
+            document.getElementById('view-patients').classList.add('hidden')
+            document.getElementById('view-handover').classList.add('hidden')
+            document.getElementById('view-workspace').classList.remove('hidden')
+
+            // Show default tab
+            switchWorkspaceTab('progress')
+        }
+
+        function closeWorkspace() {
+            document.getElementById('view-workspace').classList.add('hidden')
+            
+            // Return to previous view (patients in this case)
+            switchView('patients')
+        }
+
+        function switchWorkspaceTab(tab) {
+            currentWorkspaceTab = tab
+            
+            // Update tab styles
+            document.querySelectorAll('#workspace-tabs .tab').forEach(el => {
+                el.classList.remove('tab-active')
+                if (el.textContent.toLowerCase().includes(tab)) {
+                    el.classList.add('tab-active')
+                }
+            })
+            
+            // Show correct content
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'))
+            document.getElementById(`tab-${tab}`).classList.remove('hidden')
+            
+            // Special case for meds - render table
+            if (tab === 'meds') {
+                renderMedications()
+            }
+            
+            // Special case for investigations
+            if (tab === 'investigations') {
+                switchInvTab('labs')
+            }
+        }
+
+        function renderMedications() {
+            const container = document.getElementById('meds-table')
+            container.innerHTML = `
+                <div class="divide-y divide-zinc-50">
+                    ${medications.map((med, index) => `
+                        <div class="table-row px-6 py-4 flex items-center gap-8 text-sm">
+                            <div class="w-48">
+                                <div class="font-medium">${med.drug}</div>
+                                <div class="text-zinc-500">${med.start}</div>
+                            </div>
+                            <div>
+                                <div class="font-mono">${med.dose}</div>
+                                <div class="text-[10px] text-zinc-400 uppercase">${med.route}</div>
+                            </div>
+                            <div class="font-medium">${med.frequency}</div>
+                            
+                            <div class="ml-auto flex gap-4 items-center">
+                                <div class="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs">ACTIVE</div>
+                                <div>EDIT</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `
+        }
+
+        function addMedication() {
+            const newMed = {
+                drug: "Amoxicillin",
+                dose: "500mg",
+                route: "PO",
+                frequency: "q8h",
+                start: "10/17"
+            }
+            
+            medications.push(newMed)
+            renderMedications()
+            
+            showToast('Medication added to chart')
+        }
+
+        function switchInvTab(tab) {
+            document.querySelectorAll('.inv-tab').forEach(el => el.classList.remove('inv-tab-active'))
+            
+            const tabs = document.querySelectorAll('.inv-tab')
+            if (tab === 'labs') {
+                tabs[0].classList.add('inv-tab-active')
+                document.getElementById('inv-labs').classList.remove('hidden')
+                document.getElementById('inv-imaging').classList.add('hidden')
+            } else {
+                tabs[1].classList.add('inv-tab-active')
+                document.getElementById('inv-labs').classList.add('hidden')
+                document.getElementById('inv-imaging').classList.remove('hidden')
+            }
+        }
+
+        function logProcedure() {
+            showToast('Procedure logged in patient chart')
+        }
+
+        function markCritical() {
+            if (!currentPatient) return
+            
+            currentPatient.status = 'critical'
+            
+            // Refresh header
+            const statusPill = document.getElementById('patient-status-pill')
+            statusPill.className = 'bg-red-100 text-red-700 px-4 py-1 text-xs font-medium rounded-full'
+            statusPill.textContent = 'CRITICAL'
+            
+            showToast('Patient marked as critical. Senior notified.')
+        }
+
+        function addNewPatient() {
+            document.getElementById('add-patient-modal').classList.remove('hidden')
+            
+            // Reset form
+            document.getElementById('new-patient-name').value = ''
+            document.getElementById('new-patient-age').value = ''
+            document.getElementById('new-patient-bed').value = ''
+            document.getElementById('new-patient-diagnosis').value = ''
+            
+            document.getElementById('sex-m').classList.remove('border-blue-600', 'bg-blue-50')
+            document.getElementById('sex-f').classList.remove('border-blue-600', 'bg-blue-50')
+        }
+
+        function hideAddPatientModal() {
+            document.getElementById('add-patient-modal').classList.add('hidden')
+        }
+
+        function selectSex(sex) {
+            document.getElementById('sex-m').classList.remove('border-blue-600', 'bg-blue-50')
+            document.getElementById('sex-f').classList.remove('border-blue-600', 'bg-blue-50')
+            
+            if (sex === 'M') {
+                document.getElementById('sex-m').classList.add('border-blue-600', 'bg-blue-50')
+            } else {
+                document.getElementById('sex-f').classList.add('border-blue-600', 'bg-blue-50')
+            }
+        }
+
+        function confirmAddPatient() {
+            const name = document.getElementById('new-patient-name').value || 'New Patient'
+            const age = parseInt(document.getElementById('new-patient-age').value) || 45
+            const bed = document.getElementById('new-patient-bed').value || '101'
+            const diagnosis = document.getElementById('new-patient-diagnosis').value || 'Undiagnosed'
+            
+            // Fake sex
+            const sex = 'M'
+            
+            const newId = Math.max(...patients.map(p => p.id)) + 1
+            
+            const newPatient = {
+                id: newId,
+                name: name,
+                age: age,
+                sex: sex,
+                bed: bed,
+                ward: "3B",
+                diagnosis: diagnosis,
+                status: "stable",
+                avatarColor: "bg-sky-100",
+                avatarInitial: name[0]
+            }
+            
+            patients.push(newPatient)
+            
+            hideAddPatientModal()
+            
+            // If we're in patients view, refresh
+            if (currentView === 'patients') {
+                renderPatientsList()
+            }
+            
+            showToast('New patient added to your list')
+            
+            // Open the new patient
+            setTimeout(() => {
+                openPatientWorkspace(newId)
+            }, 300)
+        }
+
+        function showPrintOptions() {
+            document.getElementById('print-modal').classList.remove('hidden')
+            document.getElementById('print-modal').classList.add('flex')
+        }
+
+        function hidePrintModal() {
+            document.getElementById('print-modal').classList.add('hidden')
+            document.getElementById('print-modal').classList.remove('flex')
+        }
+
+        function performPrint() {
+            hidePrintModal()
+            
+            // Fake print delay
+            setTimeout(() => {
+                showToast('Sending to ward printer • 2 pages')
+            }, 400)
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast')
+            const toastMsg = document.getElementById('toast-message')
+            
+            toastMsg.textContent = message
+            toast.classList.remove('hidden')
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2')
+                setTimeout(() => {
+                    toast.classList.add('hidden')
+                    toast.classList.remove('opacity-0', 'translate-y-2')
+                }, 300)
+            }, 2200)
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (!document.getElementById('add-patient-modal').classList.contains('hidden')) {
+                    hideAddPatientModal()
+                }
+                if (!document.getElementById('print-modal').classList.contains('hidden')) {
+                    hidePrintModal()
+                }
+            }
+            
+            if ((e.metaKey || e.ctrlKey) && e.key === 'p') {
+                e.preventDefault()
+                showPrintOptions()
+            }
+        })
+
+        // Initial load
+        window.onload = function() {
+            // Render initial patients list (though hidden)
+            renderPatientsList()
+            
+            // Fake live update
+            setTimeout(() => {
+                if (currentView === 'dashboard') {
+                    showToast('New lab result for patient 312')
+                }
+            }, 4500)
+        }
+    </script>
+</body>
+</html>
+```# Medical-resident-rotation
